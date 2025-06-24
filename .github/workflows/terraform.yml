@@ -27,4 +27,7 @@ jobs:
         run: terraform validate
 
       - name: Planificar cambios
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}  # Variable de entorno para la clave de acceso
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}  # Variable de entorno para la clave secreta
         run: terraform plan -var-file="terraform.tfvars"
