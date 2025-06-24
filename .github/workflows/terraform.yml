@@ -1,42 +1,30 @@
-name: Terraform CI/CD
+name: Terraform CI
 
 on:
   push:
     branches:
       - main
-      - dev
+  pull_request:
 
 jobs:
   terraform:
-    name: Terraform Apply/Plan
+    name: Terraform Workflow
     runs-on: ubuntu-latest
 
-    defaults:
-      run:
-        shell: bash
-
     steps:
-      - name: Checkout código
-        uses: actions/checkout@v3
+      - name: Checkout del código
+        uses: actions/checkout@v4
 
-      - name: Configurar AWS Credentials
-        uses: aws-actions/configure-aws-credentials@v2
+      - name: Configurar Terraform
+        uses: hashicorp/setup-terraform@v3
         with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: us-west-1
+          terraform_version: 1.8.5
 
-      - name: Instalar Terraform
-        uses: hashicorp/setup-terraform@v2
-        with:
-          terraform_version: 1.7.5
-
-      - name: Terraform Init
+      - name: Inicializar Terraform
         run: terraform init
 
-      - name: Terraform Plan
-        run: terraform plan
+      - name: Validar configuración
+        run: terraform validate
 
-      - name: Terraform Apply
-        if: github.ref == 'refs/heads/main'
-        run: terraform apply -auto-approve
+      - name: Planificar cambios
+        run: terraform plan -var-file="terraform.tfvars"
